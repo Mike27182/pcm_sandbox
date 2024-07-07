@@ -1,0 +1,16 @@
+PMC sandbox.  Need to set bit 8 in CR4 register to allow rdpmc in user mode.
+
+Build:
+make
+
+Box setup related hints:
+cat /proc/cmdline: ro quiet splash noapic isolcpus=3 nohz_full=3 rcu_nocbs=3 hugepages=64 hugepagesz=2M intel_pstate=disable vt.handoff=7
+
+for irq in $(ls /proc/irq/); do cat /proc/irq/$irq/smp_affinity | tr -d '\n'; echo "" /proc/irq/$irq/smp_affinity; done
+for irq in $(ls /proc/irq/); do sudo sh -c "echo 7 > /proc/irq/$irq/smp_affinity"; done
+watch -db -n0.1 cat /proc/interrupts
+
+#sudo rdmsr -p 3 0x 1b #BE CAREFUL!!!
+
+for cpu in /sys/devices/system/cpu/cpu[0-9]*; do cat $cpu/cpufreq/scaling_governor; done
+
